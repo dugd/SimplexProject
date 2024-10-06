@@ -1,6 +1,6 @@
 ﻿
 
-namespace SimplexMethod
+namespace SimplexProject
 {
     public class Simplex
     {
