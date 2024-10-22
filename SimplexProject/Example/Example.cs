@@ -56,7 +56,7 @@ namespace SimplexProject.Example
 
     static class Example
     {
-        static void Main(string[] args)
+        static void Run()
         {
             InputParser parser = new InputParser();
 

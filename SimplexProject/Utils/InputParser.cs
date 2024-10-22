@@ -1,13 +1,11 @@
 ﻿using SimplexProject.Core;
 using SimplexProject.Enums;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 
 namespace SimplexProject.Utils
 {
     internal class InputParser
     {
-        public bool CoefficientsParse(string line, int size, out double[] result)
+        public bool ParseCoefficients(string line, int size, out double[] result)
         {
             result = new double[size];
 
@@ -33,7 +31,28 @@ namespace SimplexProject.Utils
             return true;
         }
 
-        public bool ConstraintParse(string line, int size, 
+        public bool ParseRelation(string line, out RelationType result)
+        {
+            switch (line)
+            {
+                case "<=":
+                    result = RelationType.LessEqual;
+                    break;
+                case ">=":
+                    result = RelationType.GreaterEqual;
+                    break;
+                case "=":
+                    result = RelationType.Equal;
+                    break;
+                default:
+                    result = default;
+                    return false;
+            }
+
+            return true;
+        }
+
+        public bool ParseConstraint(string line, int size, 
             out double[] coefficients, 
             out RelationType relation, 
             out double RHS)
@@ -50,22 +69,13 @@ namespace SimplexProject.Utils
                 return false;
             }
 
-            string coefficientsLine = string.Empty;
-            for (int i = 0; i < size; i++)
-            {
-                coefficientsLine += splited[i];
-            }
+            string coefficientsLine = string.Join(" ", splited, 0, size);
             string relationLine = splited[size];
             string RHSLine = splited[size + 1];
 
-            if (!CoefficientsParse(coefficientsLine, size, out coefficients))
-            {
-                return false;
-            }
-
-            // TODO: relation and RHS parse
-
-            return true;
+            return ParseCoefficients(coefficientsLine, size, out coefficients) &&
+                ParseRelation(relationLine, out relation) &&
+                double.TryParse(RHSLine, out RHS);
         }
 
         // TODO: Separate console input and string parse
