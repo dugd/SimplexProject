@@ -1,10 +1,11 @@
-﻿using SimplexProject.Core;
-using SimplexProject.Enums;
+﻿using SimplexProject.Enums;
 
 namespace SimplexProject.Utils
 {
-    internal class InputParser
+    internal class TextParser
     {
+        private readonly char[] defaultSeparators = new[] { ' ', '\t' };
+
         public bool ParseCoefficients(string line, int size, out double[] result)
         {
             result = new double[size];
@@ -52,16 +53,16 @@ namespace SimplexProject.Utils
             return true;
         }
 
-        public bool ParseConstraint(string line, int size, 
-            out double[] coefficients, 
-            out RelationType relation, 
+        public bool ParseConstraint(string line, int size,
+            out double[] coefficients,
+            out RelationType relation,
             out double RHS)
         {
             coefficients = Array.Empty<double>();
             relation = 0;
             RHS = 0;
 
-            
+
             string[] splited = line.Split();
 
             if (splited.Length != size + 2)
@@ -78,15 +79,44 @@ namespace SimplexProject.Utils
                 double.TryParse(RHSLine, out RHS);
         }
 
-        // TODO: Separate console input and string parse
-        public LPTask ConsoleParse()
+        public bool ParseObjectiveType(string line, out ObjectiveType result)
         {
-            throw new NotImplementedException();
+            switch (line)
+            {
+                case "max":
+                    result = ObjectiveType.Maximize;
+                    break;
+                case "min":
+                    result = ObjectiveType.Minimize;
+                    break;
+                default:
+                    result = default;
+                    return false;
+            }
 
-            // Num of constraints/variables
-            // (for (for Constraints) + Relation + RHS) input
-            // (for Objective Function) input
-            // ObjectibeType input
+            return true;
         }
+
+        public bool ParseObjectiveFunction(string line, int size, 
+            out double[] coefficients, 
+            ObjectiveType objectiveType)
+        {
+            coefficients = Array.Empty<double>();
+            objectiveType = 0;
+
+            string[] splited = line.Split();
+
+            if (splited.Length != size + 1)
+            {
+                return false;
+            }
+
+            string coefficientsLine = string.Join(" ", splited, 0, size);
+            string objectiveLine = splited[size];
+
+            return ParseCoefficients(coefficientsLine, size, out coefficients) &&
+                ParseObjectiveType(objectiveLine, out objectiveType);
+            }
+
     }
 }
