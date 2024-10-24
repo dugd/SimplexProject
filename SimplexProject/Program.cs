@@ -1,4 +1,4 @@
-﻿using SimplexProject.Enums;
+﻿using SimplexProject.Core;
 using SimplexProject.Utils;
 
 namespace SimplexProject
@@ -7,9 +7,8 @@ namespace SimplexProject
     {
         static void Main(string[] args)
         {
-            var inputParser = new TextParser();
-            Console.WriteLine(inputParser.ParseCoefficients("5 2", 2, out double[] res1));
-            Console.WriteLine(inputParser.ParseConstraint("5 1 -3 >= -1", 3, out double[] res2, out RelationType rel, out double RHS));
+            var consoleInput = new ConsoleInput();
+            LPTask task = consoleInput.GetInput();
         }
     }
 }
