@@ -16,10 +16,9 @@ namespace SimplexProject.Utils
 
             throw new NotImplementedException();
 
-            // Num of constraints/variables
+            // Num of constraints and variables
             // (for (for Constraints) + Relation + RHS) input
-            // (for Objective Function) input
-            // ObjectibeType input
+            // (for Objective Function) + ObjectibeType input
         }
     }
 }

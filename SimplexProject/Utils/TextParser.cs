@@ -1,4 +1,6 @@
 ﻿using SimplexProject.Enums;
+using System;
+using System.Globalization;
 
 namespace SimplexProject.Utils
 {
@@ -6,117 +8,117 @@ namespace SimplexProject.Utils
     {
         private readonly char[] defaultSeparators = new[] { ' ', '\t' };
 
-        public bool ParseCoefficients(string line, int size, out double[] result)
+        public (double[]? coefficients, bool isValid) ParseCoefficients(string line, int size)
         {
-            result = new double[size];
-
-            string[] splited = line.Split();
+            double[] result = new double[size];
+            string[] splited = line.Split(defaultSeparators, StringSplitOptions.RemoveEmptyEntries);
 
             if (splited.Length != size)
             {
-                return false;
+                return (null, false);
             }
 
             for (int i = 0; i < splited.Length; i++)
             {
-                if (double.TryParse(splited[i], out double value))
+                if (double.TryParse(splited[i], NumberStyles.Float, CultureInfo.InvariantCulture, out double value))
                 {
                     result[i] = value;
                 }
                 else
                 {
-                    return false;
+                    return (null, false);
                 }
             }
 
-            return true;
+            return (result, true);
         }
 
-        public bool ParseRelation(string line, out RelationType result)
+        public (RelationType relation, bool isValid) ParseRelation(string line)
         {
             switch (line)
             {
                 case "<=":
-                    result = RelationType.LessEqual;
-                    break;
+                    return (RelationType.LessEqual, true);
                 case ">=":
-                    result = RelationType.GreaterEqual;
-                    break;
+                    return (RelationType.GreaterEqual, true);
                 case "=":
-                    result = RelationType.Equal;
-                    break;
+                    return (RelationType.Equal, true);
                 default:
-                    result = default;
-                    return false;
+                    return (default, false);
             }
-
-            return true;
         }
 
-        public bool ParseConstraint(string line, int size,
-            out double[] coefficients,
-            out RelationType relation,
-            out double RHS)
+        public (double[]? coefficients, RelationType relation, double RHS, bool isValid) ParseConstraint(string line, int size)
         {
-            coefficients = Array.Empty<double>();
-            relation = 0;
-            RHS = 0;
-
-
-            string[] splited = line.Split();
+            string[] splited = line.Split(defaultSeparators, StringSplitOptions.RemoveEmptyEntries);
 
             if (splited.Length != size + 2)
             {
-                return false;
+                return (null, default, 0, false);
             }
 
             string coefficientsLine = string.Join(" ", splited, 0, size);
             string relationLine = splited[size];
             string RHSLine = splited[size + 1];
 
-            return ParseCoefficients(coefficientsLine, size, out coefficients) &&
-                ParseRelation(relationLine, out relation) &&
-                double.TryParse(RHSLine, out RHS);
-        }
-
-        public bool ParseObjectiveType(string line, out ObjectiveType result)
-        {
-            switch (line)
+            var (coefficients, coeffIsValid) = ParseCoefficients(coefficientsLine, size);
+            if (!coeffIsValid)
             {
-                case "max":
-                    result = ObjectiveType.Maximize;
-                    break;
-                case "min":
-                    result = ObjectiveType.Minimize;
-                    break;
-                default:
-                    result = default;
-                    return false;
+                return (null, default, 0, false);
             }
 
-            return true;
+            var (relation, relationIsValid) = ParseRelation(relationLine);
+            if (!relationIsValid)
+            {
+                return (null, default, 0, false);
+            }
+
+            if (!double.TryParse(RHSLine, NumberStyles.Float, CultureInfo.InvariantCulture, out double RHS))
+            {
+                return (null, default, 0, false);
+            }
+
+            return (coefficients, relation, RHS, true);
         }
 
-        public bool ParseObjectiveFunction(string line, int size, 
-            out double[] coefficients, 
-            ObjectiveType objectiveType)
+        public (ObjectiveType objectiveType, bool isValid) ParseObjectiveType(string line)
         {
-            coefficients = Array.Empty<double>();
-            objectiveType = 0;
+            switch (line.ToLower())
+            {
+                case "max":
+                    return (ObjectiveType.Maximize, true);
+                case "min":
+                    return (ObjectiveType.Minimize, true);
+                default:
+                    return (default, false);
+            }
+        }
 
-            string[] splited = line.Split();
+        public (double[]? coefficients, ObjectiveType objectiveType, bool isValid) ParseObjectiveFunction(string line, int size)
+        {
+            string[] splited = line.Split(defaultSeparators, StringSplitOptions.RemoveEmptyEntries);
 
             if (splited.Length != size + 1)
             {
-                return false;
+                return (null, default, false);
             }
 
             string coefficientsLine = string.Join(" ", splited, 0, size);
             string objectiveLine = splited[size];
 
-            return ParseCoefficients(coefficientsLine, size, out coefficients) &&
-                ParseObjectiveType(objectiveLine, out objectiveType);
+            var (coefficients, coeffIsValid) = ParseCoefficients(coefficientsLine, size);
+            if (!coeffIsValid)
+            {
+                return (null, default, false);
             }
 
+            var (objectiveType, objIsValid) = ParseObjectiveType(objectiveLine);
+            if (!objIsValid)
+            {
+                return (null, default, false);
+            }
+
+            return (coefficients, objectiveType, true);
+        }
     }
 }
