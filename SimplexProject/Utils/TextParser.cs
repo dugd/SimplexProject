@@ -35,16 +35,13 @@ namespace SimplexProject.Utils
 
         public (RelationType relation, bool isValid) ParseRelation(string line)
         {
-            switch (line)
+            try
             {
-                case "<=":
-                    return (RelationType.LessEqual, true);
-                case ">=":
-                    return (RelationType.GreaterEqual, true);
-                case "=":
-                    return (RelationType.Equal, true);
-                default:
-                    return (default, false);
+                return (RelationTypeExtensions.FromDescriptionString(line), true);
+            }
+            catch (ArgumentException)
+            {
+                return (default, false);
             }
         }
 
@@ -83,14 +80,13 @@ namespace SimplexProject.Utils
 
         public (ObjectiveType objectiveType, bool isValid) ParseObjectiveType(string line)
         {
-            switch (line.ToLower())
+            try
             {
-                case "max":
-                    return (ObjectiveType.Maximize, true);
-                case "min":
-                    return (ObjectiveType.Minimize, true);
-                default:
-                    return (default, false);
+                return (ObjectiveTypeExtensions.FromDescriptionString(line), true);
+            }
+            catch (ArgumentException)
+            {
+                return (default, false);
             }
         }
 

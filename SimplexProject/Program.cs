@@ -9,6 +9,7 @@ namespace SimplexProject
         {
             var consoleInput = new ConsoleInput();
             LPTask task = consoleInput.GetInput();
+            Console.WriteLine(task.ToString());
         }
     }
 }
