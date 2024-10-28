@@ -1,5 +1,4 @@
-﻿using SimplexProject.Enums;
-using System;
+﻿using SimplexProject.Core.Enums;
 using System.Globalization;
 
 namespace SimplexProject.Utils

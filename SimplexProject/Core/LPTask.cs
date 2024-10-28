@@ -1,4 +1,4 @@
-﻿using SimplexProject.Enums;
+﻿using SimplexProject.Core.Enums;
 
 namespace SimplexProject.Core
 {
@@ -13,7 +13,7 @@ namespace SimplexProject.Core
 
         public LPTask(
             double[] objectiveFunction,
-            double[, ] constraintsMatrix,
+            double[,] constraintsMatrix,
             double[] constraintsRHS,
             RelationType[] relationTypes,
             ObjectiveType optimizationType

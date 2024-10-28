@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SimplexProject.Core;
+using SimplexProject.Core.Enums;
 
-namespace SimplexProject.Core.Simplex.Solvers
+namespace SimplexProject.Operations.Simplex.Solvers
 {
     internal class PrimalSimplexSolver : ISimplexSolver
     {
@@ -43,7 +39,7 @@ namespace SimplexProject.Core.Simplex.Solvers
                 tableau[i, width - 1] = task.ConstraintsRHS[i];
             }
 
-            int factor = (task.Optimization == Enums.ObjectiveType.Minimize) ? 1 : -1;
+            int factor = task.Optimization == ObjectiveType.Minimize ? 1 : -1;
             for (int j = 0; j < numVariables; j++)
             {
                 tableau[height - 1, j] = factor * task.ObjectiveFuction[j];

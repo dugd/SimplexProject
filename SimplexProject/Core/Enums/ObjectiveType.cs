@@ -1,6 +1,4 @@
-﻿
-
-namespace SimplexProject.Enums
+﻿namespace SimplexProject.Core.Enums
 {
     internal enum ObjectiveType
     {
