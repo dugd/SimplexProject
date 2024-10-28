@@ -1,7 +1,4 @@
-﻿using SimplexProject.Core;
-using SimplexProject.Core.Simplex;
-using SimplexProject.Core.Simplex.Solvers;
-using SimplexProject.Utils;
+﻿using SimplexProject.Simplex;
 
 namespace SimplexProject
 {
@@ -12,8 +9,7 @@ namespace SimplexProject
             var consoleInput = new ConsoleInput();
             LPTask task = consoleInput.GetInput();
 
-            PrimalSimplexSolver primalSimplexSolver = new PrimalSimplexSolver(task);
-            SimplexSolve solve = primalSimplexSolver.Solve();
+
         }
     }
 }
