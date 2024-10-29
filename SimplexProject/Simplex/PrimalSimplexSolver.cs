@@ -1,4 +1,5 @@
 ﻿using SimplexProject.Enums;
+using SimplexProject.Simplex.Utilities;
 
 namespace SimplexProject.Simplex
 {
@@ -28,7 +29,10 @@ namespace SimplexProject.Simplex
                 throw new InvalidOperationException("basicVariables.Count != task.ConstraintsMatrix.GetLength(0)");
             }
 
-            tableau = SimplexUtilities.BuildTableau(task, basicVariables);
+            tableau = SimplexUtilities.BuildTableau(
+                new ObjectiveData(task.ObjectiveFuction, task.Optimization), 
+                new StandartConstraintData(task.ConstraintsMatrix, task.ConstraintsRHS), 
+                basicVariables);
         }
 
         public void NextIteration()

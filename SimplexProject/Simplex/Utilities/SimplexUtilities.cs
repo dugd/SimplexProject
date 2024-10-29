@@ -1,11 +1,6 @@
 ﻿using SimplexProject.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SimplexProject.Simplex
+namespace SimplexProject.Simplex.Utilities
 {
     internal static class SimplexUtilities
     {
@@ -48,10 +43,10 @@ namespace SimplexProject.Simplex
                 task.Optimization);
         }
 
-        public static List<int> FindBasicVariables(double[,] constraintsMatrix)
+        public static List<int> FindBasicVariables(double[,] constraintMatrix)
         {
-            int constraintsCount = constraintsMatrix.GetLength(0);
-            int variablesCount = constraintsMatrix.GetLength(1);
+            int constraintsCount = constraintMatrix.GetLength(0);
+            int variablesCount = constraintMatrix.GetLength(1);
 
             var result = new List<int>();
 
@@ -61,7 +56,7 @@ namespace SimplexProject.Simplex
                 int c = 0;
                 for (int i = 0; i < constraintsCount; i++)
                 {
-                    double val = constraintsMatrix[i, j];
+                    double val = constraintMatrix[i, j];
                     if (val == 1) c++;
                     else if (val != 0)
                     {
@@ -74,9 +69,42 @@ namespace SimplexProject.Simplex
                     result.Add(j);
                     if (result.Count == constraintsCount) break;
                 }
-
             }
             return result;
+        }
+
+        public static double[,] BuildTableau(ObjectiveData objectiveData, StandartConstraintData constraintData, List<int> basicVariables)
+        {
+            int constraintsCount = constraintData.Matrix.GetLength(0);
+            int variablesCount = constraintData.Matrix.GetLength(1);
+
+            int height = constraintsCount + 1;
+            int width = variablesCount + 1;
+
+            var tableau = new double[height, width];
+
+            for (int i = 0; i < constraintsCount; i++)
+            {
+                for (int j = 0; j < variablesCount; j++)
+                {
+                    tableau[i, j] = constraintData.Matrix[i, j];
+                }
+            }
+
+            for (int i = 0; i < constraintsCount; i++)
+            {
+                tableau[i, width - 1] = constraintData.RightHandSide[i];
+            }
+
+            int sign = objectiveData.OptimizationType == ObjectiveType.Minimize ? 1 : -1;
+            for (int j = 0; j < variablesCount; j++)
+            {
+                tableau[height - 1, j] = sign * objectiveData.Coefficients[j];
+            }
+
+            tableau[height - 1, width - 1] = basicVariables.Select((val, i) => objectiveData.Coefficients[val] * constraintData.RightHandSide[i]).Sum();
+
+            return tableau;
         }
 
         public static bool IsOptimal(double[,] tableau)
@@ -90,40 +118,6 @@ namespace SimplexProject.Simplex
                 }
             }
             return true;
-        }
-
-        public static double[,] BuildTableau(LPTask task, List<int> basicVariables)
-        {
-            int constraintsCount = task.ConstraintsMatrix.GetLength(0);
-            int variablesCount = task.ConstraintsMatrix.GetLength(1);
-
-            int height = constraintsCount + 1;
-            int width = variablesCount + 1;
-
-            var tableau = new double[height, width];
-
-            for (int i = 0; i < constraintsCount; i++)
-            {
-                for (int j = 0; j < variablesCount; j++)
-                {
-                    tableau[i, j] = task.ConstraintsMatrix[i, j];
-                }
-            }
-
-            for (int i = 0; i < constraintsCount; i++)
-            {
-                tableau[i, width - 1] = task.ConstraintsRHS[i];
-            }
-
-            int sign = task.Optimization == ObjectiveType.Minimize ? 1 : -1;
-            for (int j = 0; j < variablesCount; j++)
-            {
-                tableau[height - 1, j] = sign * task.ObjectiveFuction[j];
-            }
-
-            tableau[height - 1, width - 1] = basicVariables.Select((val, i) => task.ObjectiveFuction[val] * task.ConstraintsRHS[i]).Sum();
-
-            return tableau;
         }
 
         public static int FindPivotColumn(double[,] tableau)
