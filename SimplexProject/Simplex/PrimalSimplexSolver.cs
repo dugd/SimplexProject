@@ -3,25 +3,64 @@ using SimplexProject.Simplex.Utilities;
 
 namespace SimplexProject.Simplex
 {
+    internal enum SimplexStep
+    {
+        Transform,
+        BuildTableau,
+        Iteration,
+        Complete,
+    }
+
     internal class PrimalSimplexSolver
     {
         private LPTask task;
         private List<int> basicVariables;
         private double[,] tableau;
+        private SimplexStep currentStep;
+        private bool isOptimal;
 
         public PrimalSimplexSolver(LPTask task)
         {
             this.task = task;
             basicVariables = new List<int>();
-            tableau = new double[0,0];
+            tableau = new double[0, 0];
+            currentStep = SimplexStep.Transform;
+            isOptimal = false;
         }
 
-        public void TransformTask()
+        public SimplexStep CurrentStep => currentStep;
+
+        public void MoveToNextStep()
+        {
+            switch (currentStep)
+            {
+                case SimplexStep.Transform:
+                    TransformTask();
+                    break;
+
+                case SimplexStep.BuildTableau:
+                    BuildTableau();
+                    break;
+
+                case SimplexStep.Iteration:
+                    PerformIteration();
+                    if (isOptimal)
+                    {
+                        currentStep = SimplexStep.Complete;
+                    }
+                    break;
+
+                case SimplexStep.Complete:
+                    break;
+            }
+        }
+
+        private void TransformTask()
         {
             task = SimplexUtilities.ConvertToStandartForm(task);
         }
 
-        public void BuildTableau()
+        private void BuildTableau()
         {
             basicVariables = SimplexUtilities.FindBasicVariables(task.ConstraintsMatrix);
             if (basicVariables.Count != task.ConstraintsMatrix.GetLength(0))
@@ -33,9 +72,11 @@ namespace SimplexProject.Simplex
                 new ObjectiveData(task.ObjectiveFuction, task.Optimization), 
                 new StandartConstraintData(task.ConstraintsMatrix, task.ConstraintsRHS), 
                 basicVariables);
+
+            isOptimal = IsOptimal();
         }
 
-        public void NextIteration()
+        private void PerformIteration()
         {
             int pivotColumn = SimplexUtilities.FindPivotColumn(tableau);
             int pivotRow = SimplexUtilities.FindPivotRow(tableau, pivotColumn);
@@ -43,13 +84,66 @@ namespace SimplexProject.Simplex
             if (pivotRow == -1) throw new InvalidOperationException("The problem is unbounded.");
 
             tableau = SimplexUtilities.NextIteration(tableau, pivotColumn, pivotRow);
-
             basicVariables[pivotRow] = pivotColumn;
+
+            isOptimal = IsOptimal();
         }
 
         public bool IsOptimal()
         {
             return SimplexUtilities.IsOptimal(tableau);
+        }
+
+        public string GetCurrentState()
+        {
+            return currentStep switch
+            {
+                SimplexStep.Transform => "Transforming task to standard form.",
+                SimplexStep.BuildTableau => "Building initial simplex tableau.",
+                SimplexStep.Iteration => "Performing simplex iteration.",
+                SimplexStep.Complete => "Solution is complete.",
+                _ => "Unknown state."
+            };
+        }
+
+        public object GetDisplayData()
+        {
+            if (currentStep == SimplexStep.Complete)
+            {
+                return GetSolution();
+            }
+            else
+            {
+                return GetTableau();
+            }
+        }
+
+        private object GetSolution()
+        {
+            int variablesCount = tableau.GetLength(1) - 1;
+            double[] solution = new double[variablesCount];
+
+            for (int i = 0; i < basicVariables.Count; i++)
+            {
+                solution[basicVariables[i]] = tableau[i, variablesCount];
+            }
+
+            return new
+            {
+                Solution = solution,
+                OptimalValue = Math.Round(tableau[tableau.GetLength(0) - 1, tableau.GetLength(1) - 1], 2)
+            };
+        }
+
+        private object GetTableau()
+        {
+            var data = new
+            {
+                Tableau = tableau,
+                BasicVariables = basicVariables,
+                ObjectiveValue = tableau[tableau.GetLength(0) - 1, tableau.GetLength(1) - 1]
+            };
+            return data;
         }
 
         public void PrintTask()
@@ -112,23 +206,6 @@ namespace SimplexProject.Simplex
                 Console.WriteLine($"x{j + 1} = {Math.Round(solution[j], 2)}");
             }
             Console.WriteLine($"Optimal Value: {Math.Round(tableau[tableau.GetLength(0) - 1, tableau.GetLength(1) - 1], 2)}");
-        }
-
-        public void Solve()
-        {
-            TransformTask();
-            PrintTask();
-
-            BuildTableau();
-            PrintTableau();
-
-            while (!IsOptimal())
-            {
-                NextIteration();
-                PrintTableau();
-            }
-
-            PrintSolution();
         }
     }
 }
