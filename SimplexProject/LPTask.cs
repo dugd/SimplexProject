@@ -27,6 +27,9 @@ namespace SimplexProject
 
         }
 
+        public int ConstraintsCount => ConstraintsMatrix.GetLength(0);
+        public int VariablesCount => ObjectiveFuction.Length;
+
         public override string ToString()
         {
             string result = string.Empty;
