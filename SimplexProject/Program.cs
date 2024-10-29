@@ -8,6 +8,10 @@ namespace SimplexProject
         {
             var consoleInput = new ConsoleInput();
             LPTask task = consoleInput.GetInput();
+            Console.WriteLine(task);
+
+            var solver = new PrimalSimplexSolver(task);
+            solver.Solve();
 
 
         }
