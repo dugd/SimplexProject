@@ -1,4 +1,4 @@
-﻿namespace SimplexProject.Core.Enums
+﻿namespace SimplexProject.Enums
 {
     internal enum RelationType
     {

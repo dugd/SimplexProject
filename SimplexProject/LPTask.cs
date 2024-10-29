@@ -1,6 +1,6 @@
-﻿using SimplexProject.Core.Enums;
+﻿using SimplexProject.Enums;
 
-namespace SimplexProject.Core
+namespace SimplexProject
 {
     internal class LPTask
     {

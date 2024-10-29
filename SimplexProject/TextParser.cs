@@ -1,7 +1,7 @@
-﻿using SimplexProject.Core.Enums;
+﻿using SimplexProject.Enums;
 using System.Globalization;
 
-namespace SimplexProject.Utils
+namespace SimplexProject
 {
     internal class TextParser
     {

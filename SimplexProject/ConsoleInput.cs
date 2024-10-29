@@ -1,7 +1,6 @@
-﻿using SimplexProject.Core.Enums;
-using SimplexProject.Utils;
+﻿using SimplexProject.Enums;
 
-namespace SimplexProject.Input
+namespace SimplexProject
 {
     internal class ConsoleInput
     {
