@@ -1,6 +1,6 @@
 ﻿using SimplexProject.Enums;
 
-namespace SimplexProject.Solvers.Utilities
+namespace SimplexProject.Utilities.Simplex
 {
     internal static class SimplexUtilities
     {
@@ -146,6 +146,64 @@ namespace SimplexProject.Solvers.Utilities
             }
 
             return newTableau;
+        }
+
+        public static bool IsDualOptimal(double[,] tableau)
+        {
+            int constraintsCount = tableau.GetLength(0) - 1;
+
+            for (int i = 0; i < constraintsCount; i++)
+            {
+                if (tableau[i, tableau.GetLength(1) - 1] < 0)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static int FindDualPivotRow(double[,] tableau)
+        {
+            int constraintsCount = tableau.GetLength(0) - 1;
+
+            int result = -1;
+            double minValue = 0;
+            for (int i = 0; i < constraintsCount; i++)
+            {
+                double value = tableau[i, tableau.GetLength(1) - 1];
+                if (value < minValue)
+                {
+                    minValue = value;
+                    result = i;
+                }
+            }
+            return result;
+        }
+
+        // TODO: Research this method
+        public static int FindDualPivotColumn(double[,] tableau, int pivotRow)
+        {
+            int variablesCount = tableau.GetLength(1) - 1;
+
+            double minRatio = double.PositiveInfinity;
+            int pivotColumn = -1;
+
+            for (int j = 0; j < variablesCount; j++)
+            {
+                double func = tableau[tableau.GetLength(0) - 1, j];
+                double coefficient = tableau[pivotRow, j];
+
+                if (Math.Abs(coefficient) > 1e-10)
+                {
+                    double ratio = func / coefficient;
+                    if (Math.Abs(ratio) > 1e-10 && Math.Abs(ratio) < Math.Abs(minRatio))
+                    {
+                        minRatio = ratio;
+                        pivotColumn = j;
+                    }
+                }
+            }
+            return pivotColumn;
         }
     }
 }

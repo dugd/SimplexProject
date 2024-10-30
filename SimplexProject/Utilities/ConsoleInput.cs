@@ -1,4 +1,5 @@
 ﻿using SimplexProject.Enums;
+using SimplexProject.Models;
 
 namespace SimplexProject.Utilities
 {

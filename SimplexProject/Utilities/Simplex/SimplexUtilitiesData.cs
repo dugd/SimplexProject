@@ -1,6 +1,6 @@
 ﻿using SimplexProject.Enums;
 
-namespace SimplexProject.Solvers.Utilities
+namespace SimplexProject.Utilities.Simplex
 {
     internal struct ObjectiveData
     {

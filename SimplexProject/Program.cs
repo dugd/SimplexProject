@@ -1,5 +1,8 @@
 ﻿using SimplexProject.Converters;
+using SimplexProject.Models;
+using SimplexProject.Utilities;
 using SimplexProject.Solvers;
+using SimplexProject.Enums;
 
 namespace SimplexProject
 {
@@ -73,19 +76,22 @@ namespace SimplexProject
         {
             var consoleInput = new ConsoleInput();
             LPTask task = consoleInput.GetInput();
+
+            Console.WriteLine("Task: ");
             Console.WriteLine(task);
             Console.WriteLine();
 
+            Console.WriteLine("Prepare before dual form: ");
             LPTask prepare = DualConverter.PrepareConvertToDualForm(task);
             Console.WriteLine(prepare);
             Console.WriteLine();
 
+            Console.WriteLine("Dual form: ");
             LPTask dual = DualConverter.ConvertToDualForm(prepare);
             Console.WriteLine(dual);
             Console.WriteLine();
 
-            /*
-            var solver = new PrimalSimplexSolver(task);
+            var solver = new DualSimplexSolver(task);
 
             while (solver.CurrentStep != SimplexStep.Complete)
             {
@@ -105,7 +111,6 @@ namespace SimplexProject
                     PrintSolution(data);
                 }
             }
-            */
 
 
         }

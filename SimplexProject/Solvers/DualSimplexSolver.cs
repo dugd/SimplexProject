@@ -5,7 +5,7 @@ using SimplexProject.Utilities.Simplex;
 
 namespace SimplexProject.Solvers
 {
-    internal class PrimalSimplexSolver
+    internal class DualSimplexSolver
     {
         private LPTask task;
         private List<int> basicVariables;
@@ -13,7 +13,7 @@ namespace SimplexProject.Solvers
         private SimplexStep currentStep;
         private bool isOptimal;
 
-        public PrimalSimplexSolver(LPTask task)
+        public DualSimplexSolver(LPTask task)
         {
             this.task = task;
             basicVariables = new List<int>();
@@ -66,13 +66,22 @@ namespace SimplexProject.Solvers
             }
         }
 
+
         private void TransformTask()
         {
-            task = StandartConverter.ConvertToStandartForm(task);
+            task = StandartConverter.ConvertToDualStandartForm(task);
         }
 
         private void BuildTableau()
         {
+            Func<double, bool> predicate = task.Optimization == ObjectiveType.Minimize ?
+                val => val >= 0 :
+                val => val <= 0;
+            if (!task.ObjectiveFuction.All(predicate))
+            {
+                throw new InvalidOperationException("There's no start solution");
+            }
+
             basicVariables = SimplexUtilities.FindBasicVariables(task.ConstraintsMatrix);
             if (basicVariables.Count != task.ConstraintsMatrix.GetLength(0))
             {
@@ -80,8 +89,8 @@ namespace SimplexProject.Solvers
             }
 
             tableau = SimplexUtilities.BuildTableau(
-                new ObjectiveData(task.ObjectiveFuction, task.Optimization), 
-                new StandartConstraintData(task.ConstraintsMatrix, task.ConstraintsRHS), 
+                new ObjectiveData(task.ObjectiveFuction, ObjectiveType.Maximize),
+                new StandartConstraintData(task.ConstraintsMatrix, task.ConstraintsRHS),
                 basicVariables);
 
             isOptimal = IsOptimal();
@@ -89,10 +98,10 @@ namespace SimplexProject.Solvers
 
         private void PerformIteration()
         {
-            int pivotColumn = SimplexUtilities.FindPivotColumn(tableau);
-            int pivotRow = SimplexUtilities.FindPivotRow(tableau, pivotColumn);
+            int pivotRow = SimplexUtilities.FindDualPivotRow(tableau);
+            int pivotColumn = SimplexUtilities.FindDualPivotColumn(tableau, pivotRow);
 
-            if (pivotRow == -1) throw new InvalidOperationException("The problem is unbounded.");
+            if (pivotColumn == -1) throw new InvalidOperationException("The problem is unbounded.");
 
             tableau = SimplexUtilities.NextIteration(tableau, pivotColumn, pivotRow);
             basicVariables[pivotRow] = pivotColumn;
@@ -102,7 +111,7 @@ namespace SimplexProject.Solvers
 
         public bool IsOptimal()
         {
-            return SimplexUtilities.IsOptimal(tableau);
+            return SimplexUtilities.IsDualOptimal(tableau);
         }
 
         public string GetCurrentState()
