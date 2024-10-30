@@ -1,6 +1,7 @@
 ﻿using SimplexProject.Enums;
+using SimplexProject.Models;
 
-namespace SimplexProject.Converter
+namespace SimplexProject.Converters
 {
     internal static class StandartConverter
     {

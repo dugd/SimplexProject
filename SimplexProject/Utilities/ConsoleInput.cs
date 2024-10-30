@@ -1,6 +1,6 @@
 ﻿using SimplexProject.Enums;
 
-namespace SimplexProject
+namespace SimplexProject.Utilities
 {
     internal class ConsoleInput
     {

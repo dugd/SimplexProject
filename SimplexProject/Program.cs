@@ -1,5 +1,5 @@
-﻿using SimplexProject.Converter;
-using SimplexProject.Simplex;
+﻿using SimplexProject.Converters;
+using SimplexProject.Solvers;
 
 namespace SimplexProject
 {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimplexProject.Converter
+namespace SimplexProject.Converters
 {
     internal static class DualConverter
     {

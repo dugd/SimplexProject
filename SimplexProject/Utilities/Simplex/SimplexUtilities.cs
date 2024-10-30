@@ -1,6 +1,6 @@
 ﻿using SimplexProject.Enums;
 
-namespace SimplexProject.Simplex.Utilities
+namespace SimplexProject.Solvers.Utilities
 {
     internal static class SimplexUtilities
     {

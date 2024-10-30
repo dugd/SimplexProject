@@ -1,7 +1,8 @@
-﻿using SimplexProject.Converter;
-using SimplexProject.Simplex.Utilities;
+﻿using SimplexProject.Converters;
+using SimplexProject.Solvers.Utilities;
+using SimplexProject.Utilities.Simplex;
 
-namespace SimplexProject.Simplex
+namespace SimplexProject.Solvers
 {
     internal enum SimplexStep
     {
