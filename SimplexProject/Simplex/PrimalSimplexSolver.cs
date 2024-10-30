@@ -1,4 +1,5 @@
-﻿using SimplexProject.Simplex.Utilities;
+﻿using SimplexProject.Converter;
+using SimplexProject.Simplex.Utilities;
 
 namespace SimplexProject.Simplex
 {
@@ -74,7 +75,7 @@ namespace SimplexProject.Simplex
 
         private void TransformTask()
         {
-            task = SimplexUtilities.ConvertToStandartForm(task);
+            task = StandartConverter.ConvertToStandartForm(task);
         }
 
         private void BuildTableau()

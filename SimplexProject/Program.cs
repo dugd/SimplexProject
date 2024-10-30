@@ -1,4 +1,5 @@
-﻿using SimplexProject.Simplex;
+﻿using SimplexProject.Converter;
+using SimplexProject.Simplex;
 
 namespace SimplexProject
 {
@@ -75,6 +76,15 @@ namespace SimplexProject
             Console.WriteLine(task);
             Console.WriteLine();
 
+            LPTask prepare = DualConverter.PrepareConvertToDualForm(task);
+            Console.WriteLine(prepare);
+            Console.WriteLine();
+
+            LPTask dual = DualConverter.ConvertToDualForm(task);
+            Console.WriteLine(dual);
+            Console.WriteLine();
+
+            /*
             var solver = new PrimalSimplexSolver(task);
 
             while (solver.CurrentStep != SimplexStep.Complete)
@@ -95,6 +105,7 @@ namespace SimplexProject
                     PrintSolution(data);
                 }
             }
+            */
 
 
         }
