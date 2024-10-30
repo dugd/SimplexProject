@@ -80,7 +80,7 @@ namespace SimplexProject
             Console.WriteLine(prepare);
             Console.WriteLine();
 
-            LPTask dual = DualConverter.ConvertToDualForm(task);
+            LPTask dual = DualConverter.ConvertToDualForm(prepare);
             Console.WriteLine(dual);
             Console.WriteLine();
 
