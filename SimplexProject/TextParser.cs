@@ -7,14 +7,14 @@ namespace SimplexProject
     {
         private readonly char[] defaultSeparators = new[] { ' ', '\t' };
 
-        public (double[]? coefficients, bool isValid) ParseCoefficients(string line, int size)
+        public (double[] coefficients, bool isValid) ParseCoefficients(string line, int size)
         {
             double[] result = new double[size];
             string[] splited = line.Split(defaultSeparators, StringSplitOptions.RemoveEmptyEntries);
 
             if (splited.Length != size)
             {
-                return (null, false);
+                return (Array.Empty<double>(), false);
             }
 
             for (int i = 0; i < splited.Length; i++)
@@ -25,7 +25,7 @@ namespace SimplexProject
                 }
                 else
                 {
-                    return (null, false);
+                    return (Array.Empty<double>(), false);
                 }
             }
 
@@ -44,13 +44,13 @@ namespace SimplexProject
             }
         }
 
-        public (double[]? coefficients, RelationType relation, double RHS, bool isValid) ParseConstraint(string line, int size)
+        public (double[] coefficients, RelationType relation, double RHS, bool isValid) ParseConstraint(string line, int size)
         {
             string[] splited = line.Split(defaultSeparators, StringSplitOptions.RemoveEmptyEntries);
 
             if (splited.Length != size + 2)
             {
-                return (null, default, 0, false);
+                return (Array.Empty<double>(), default, 0, false);
             }
 
             string coefficientsLine = string.Join(" ", splited, 0, size);
@@ -60,18 +60,18 @@ namespace SimplexProject
             var (coefficients, coeffIsValid) = ParseCoefficients(coefficientsLine, size);
             if (!coeffIsValid)
             {
-                return (null, default, 0, false);
+                return (Array.Empty<double>(), default, 0, false);
             }
 
             var (relation, relationIsValid) = ParseRelation(relationLine);
             if (!relationIsValid)
             {
-                return (null, default, 0, false);
+                return (Array.Empty<double>(), default, 0, false);
             }
 
             if (!double.TryParse(RHSLine, NumberStyles.Float, CultureInfo.InvariantCulture, out double RHS))
             {
-                return (null, default, 0, false);
+                return (Array.Empty<double>(), default, 0, false);
             }
 
             return (coefficients, relation, RHS, true);
@@ -89,13 +89,13 @@ namespace SimplexProject
             }
         }
 
-        public (double[]? coefficients, ObjectiveType objectiveType, bool isValid) ParseObjectiveFunction(string line, int size)
+        public (double[] coefficients, ObjectiveType objectiveType, bool isValid) ParseObjectiveFunction(string line, int size)
         {
             string[] splited = line.Split(defaultSeparators, StringSplitOptions.RemoveEmptyEntries);
 
             if (splited.Length != size + 1)
             {
-                return (null, default, false);
+                return (Array.Empty<double>(), default, false);
             }
 
             string coefficientsLine = string.Join(" ", splited, 0, size);
@@ -104,13 +104,13 @@ namespace SimplexProject
             var (coefficients, coeffIsValid) = ParseCoefficients(coefficientsLine, size);
             if (!coeffIsValid)
             {
-                return (null, default, false);
+                return (Array.Empty<double>(), default, false);
             }
 
             var (objectiveType, objIsValid) = ParseObjectiveType(objectiveLine);
             if (!objIsValid)
             {
-                return (null, default, false);
+                return (Array.Empty<double>(), default, false);
             }
 
             return (coefficients, objectiveType, true);
