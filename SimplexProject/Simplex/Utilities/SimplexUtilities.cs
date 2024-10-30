@@ -146,7 +146,7 @@ namespace SimplexProject.Simplex.Utilities
                 double rhs = tableau[i, tableau.GetLength(1) - 1];
                 double coefficient = tableau[i, pivotColumn];
 
-                if (coefficient > 0)
+                if (coefficient > 1e-10)
                 {
                     double ratio = rhs / coefficient;
                     if (ratio < minRatio)
@@ -180,7 +180,7 @@ namespace SimplexProject.Simplex.Utilities
                 double factor = tableau[i, pivotColumn];
                 for (int j = 0; j < width; j++)
                 {
-                    newTableau[pivotRow, j] = tableau[i, j] - factor * tableau[pivotRow, j];
+                    newTableau[i, j] = tableau[i, j] - factor * newTableau[pivotRow, j];
                 }
             }
 

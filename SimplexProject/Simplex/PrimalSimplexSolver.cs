@@ -1,10 +1,10 @@
-﻿using SimplexProject.Enums;
-using SimplexProject.Simplex.Utilities;
+﻿using SimplexProject.Simplex.Utilities;
 
 namespace SimplexProject.Simplex
 {
     internal enum SimplexStep
     {
+        Init,
         Transform,
         BuildTableau,
         Iteration,
@@ -24,7 +24,7 @@ namespace SimplexProject.Simplex
             this.task = task;
             basicVariables = new List<int>();
             tableau = new double[0, 0];
-            currentStep = SimplexStep.Transform;
+            currentStep = SimplexStep.Init;
             isOptimal = false;
         }
 
@@ -34,19 +34,36 @@ namespace SimplexProject.Simplex
         {
             switch (currentStep)
             {
-                case SimplexStep.Transform:
+                case SimplexStep.Init:
                     TransformTask();
+                    currentStep = SimplexStep.Transform;
+                    break;
+
+                case SimplexStep.Transform:
+                    BuildTableau();
+                    currentStep = SimplexStep.BuildTableau;
                     break;
 
                 case SimplexStep.BuildTableau:
-                    BuildTableau();
-                    break;
-
-                case SimplexStep.Iteration:
-                    PerformIteration();
                     if (isOptimal)
                     {
                         currentStep = SimplexStep.Complete;
+                    }
+                    else
+                    {
+                        PerformIteration();
+                        currentStep = SimplexStep.Iteration;
+                    }
+                    break;
+
+                case SimplexStep.Iteration:
+                    if (isOptimal)
+                    {
+                        currentStep = SimplexStep.Complete;
+                    }
+                    else
+                    {
+                        PerformIteration();
                     }
                     break;
 
@@ -108,14 +125,27 @@ namespace SimplexProject.Simplex
 
         public object GetDisplayData()
         {
-            if (currentStep == SimplexStep.Complete)
+            if (currentStep == SimplexStep.Transform)
             {
-                return GetSolution();
+                return GetTask();
             }
-            else
+            else if (currentStep == SimplexStep.BuildTableau || currentStep == SimplexStep.Iteration)
             {
                 return GetTableau();
             }
+            else if (currentStep == SimplexStep.Complete)
+            {
+                return GetSolution();
+            }
+            return new();
+        }
+
+        private object GetTask()
+        {
+            return new
+            {
+                Task = task,
+            };
         }
 
         private object GetSolution()
@@ -131,7 +161,7 @@ namespace SimplexProject.Simplex
             return new
             {
                 Solution = solution,
-                OptimalValue = Math.Round(tableau[tableau.GetLength(0) - 1, tableau.GetLength(1) - 1], 2)
+                OptimalValue = tableau[tableau.GetLength(0) - 1, tableau.GetLength(1) - 1],
             };
         }
 
@@ -141,71 +171,8 @@ namespace SimplexProject.Simplex
             {
                 Tableau = tableau,
                 BasicVariables = basicVariables,
-                ObjectiveValue = tableau[tableau.GetLength(0) - 1, tableau.GetLength(1) - 1]
             };
             return data;
-        }
-
-        public void PrintTask()
-        {
-            Console.WriteLine(task);
-        }
-
-        public void PrintTableau()
-        {
-            Console.WriteLine("Current Simplex Tableau:");
-            int width = tableau.GetLength(1);
-            int height = tableau.GetLength(0);
-            string[] variableNames = new string[width - 1];
-            for (int j = 0; j < width - 1; j++)
-            {
-                variableNames[j] = "x" + (j + 1);
-            }
-
-            Console.Write("Basic \t");
-            foreach (string varName in variableNames)
-            {
-                Console.Write(varName + "\t");
-            }
-            Console.WriteLine("RHS");
-
-            for (int i = 0; i < height; i++)
-            {
-                if (i < height - 1)
-                {
-                    Console.Write(" " + variableNames[basicVariables[i]] + "\t");
-                }
-                else
-                {
-                    Console.Write(" Z\t");
-                }
-
-                for (int j = 0; j < width; j++)
-                {
-                    Console.Write(Math.Round(tableau[i, j], 2) + "\t");
-                }
-                Console.WriteLine();
-            }
-            Console.WriteLine();
-        }
-
-        public void PrintSolution()
-        {
-            Console.WriteLine("Solution: ");
-            int variablesCount = tableau.GetLength(1) - 1;
-
-            double[] solution = new double[variablesCount];
-
-            for (int i = 0; i < basicVariables.Count; i++)
-            {
-                solution[basicVariables[i]] = tableau[i, variablesCount];
-            }
-
-            for (int j = 0; j < solution.Length; j++)
-            {
-                Console.WriteLine($"x{j + 1} = {Math.Round(solution[j], 2)}");
-            }
-            Console.WriteLine($"Optimal Value: {Math.Round(tableau[tableau.GetLength(0) - 1, tableau.GetLength(1) - 1], 2)}");
         }
     }
 }
