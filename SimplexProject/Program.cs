@@ -77,20 +77,30 @@ namespace SimplexProject
             var consoleInput = new ConsoleInput();
             LPTask task = consoleInput.GetInput();
 
-            Console.WriteLine("Task: ");
-            Console.WriteLine(task);
-            Console.WriteLine();
+            Console.WriteLine("Оберіть метод для вирішення задачі:");
+            Console.WriteLine("1 - Двоїстий симплекс метод");
+            Console.WriteLine("2 - Перетворення в двоїсту задачу та рішення через PrimalSimplexSolver");
+            Console.Write("Ваш вибір: ");
+            var choice = Console.ReadLine();
 
-            Console.WriteLine("Prepare before dual form: ");
-            LPTask prepare = DualConverter.PrepareConvertToDualForm(task);
-            Console.WriteLine(prepare);
-            Console.WriteLine();
+            if (choice == "1")
+            {
+                Console.WriteLine("\nОбрано: Двоїстий симплекс метод");
+                SolveUsingDualSimplex(task);
+            }
+            else if (choice == "2")
+            {
+                Console.WriteLine("\nОбрано: Перетворення в двоїсту задачу та рішення через PrimalSimplexSolver");
+                SolveUsingPrimalSimplex(task);
+            }
+            else
+            {
+                Console.WriteLine("Невірний вибір. Будь ласка, перезапустіть програму та оберіть 1 або 2.");
+            }
+        }
 
-            Console.WriteLine("Dual form: ");
-            LPTask dual = DualConverter.ConvertToDualForm(prepare);
-            Console.WriteLine(dual);
-            Console.WriteLine();
-
+        static void SolveUsingDualSimplex(LPTask task)
+        {
             var solver = new DualSimplexSolver(task);
 
             while (solver.CurrentStep != SimplexStep.Complete)
@@ -111,8 +121,44 @@ namespace SimplexProject
                     PrintSolution(data);
                 }
             }
+        }
 
+        static void SolveUsingPrimalSimplex(LPTask task)
+        {
+            Console.WriteLine("Task: ");
+            Console.WriteLine(task);
+            Console.WriteLine();
 
+            Console.WriteLine("Prepare before dual form: ");
+            LPTask prepare = DualConverter.PrepareConvertToDualForm(task);
+            Console.WriteLine(prepare);
+            Console.WriteLine();
+
+            Console.WriteLine("Dual form: ");
+            LPTask dual = DualConverter.ConvertToDualForm(prepare);
+            Console.WriteLine(dual);
+            Console.WriteLine();
+
+            var solver = new PrimalSimplexSolver(dual);
+
+            while (solver.CurrentStep != SimplexStep.Complete)
+            {
+                solver.MoveToNextStep();
+                dynamic data = solver.GetDisplayData();
+
+                if (solver.CurrentStep == SimplexStep.Transform)
+                {
+                    PrintTask(data);
+                }
+                else if (solver.CurrentStep == SimplexStep.BuildTableau || solver.CurrentStep == SimplexStep.Iteration)
+                {
+                    PrintTableau(data);
+                }
+                else if (solver.CurrentStep == SimplexStep.Complete)
+                {
+                    PrintSolution(data);
+                }
+            }
         }
     }
 }
