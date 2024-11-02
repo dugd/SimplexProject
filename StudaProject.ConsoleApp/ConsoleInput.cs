@@ -1,7 +1,8 @@
-﻿using SimplexProject.Enums;
-using SimplexProject.Models;
+﻿using StudaProject.Core.Models;
+using StudaProject.Core.Enums;
+using StudaProject.Core.Utilities;
 
-namespace SimplexProject.Utilities
+namespace StudaProject.ConsoleApp
 {
     internal class ConsoleInput
     {
