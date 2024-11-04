@@ -1,3 +1,5 @@
+using StudaProject.WinFormsApp;
+
 namespace StudaProject.WinForms
 {
     internal static class Program
